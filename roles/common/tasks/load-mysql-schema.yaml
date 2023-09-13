@@ -1,0 +1,13 @@
+- name: install mysql
+  ansible.builtin.yum:
+    name: mysql
+    state: installed
+
+- name: load data
+  ansible.builtin.shell: mysql -h mysql.joindevops.art -uroot -pRoboShop@1 < /app/schema/shipping.sql 
+
+- name: start the service
+  ansible.builtin.service:
+    name: shipping
+    state: restarted
+    enabled: true
