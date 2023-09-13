@@ -1,36 +1,37 @@
 - name: check roboshop user exist or not
-    ansible.builtin.command: id roboshop
-    register: out #output is variable name
-    ignore_errors: true
+  ansible.builtin.command: id roboshop
+  register: out #output is variable name
+  ignore_errors: true
 
-  - when: out.rc != 0
-    name: create user roboshop
-    become: yes # we need sudo access for this task only
-    ansible.builtin.user:
-      name: roboshop
+- when: out.rc != 0
 
-  - name: check /app directory exists or not
-    ansible.builtin.stat:
-      path: /app
-    register: directory
+- name: create user roboshop
+  become: yes # we need sudo access for this task only
+  ansible.builtin.user:
+    name: roboshop
 
-  - name: print the directory stats
-    ansible.builtin.debug:
-      msg: "output: {{directory}}"
+- name: check /app directory exists or not
+  ansible.builtin.stat:
+    path: /app
+  register: directory
 
-  - when: directory.stat.exists == False
-    name: create /app directory
-    ansible.builtin.file:
-      path: /app
-      state: directory
+- name: print the directory stats
+  ansible.builtin.debug:
+    msg: "output: {{directory}}"
 
-  - name: download "{{component}}" artifact
-    ansible.builtin.get_url:
-      url: https://roboshop-builds.s3.amazonaws.com/"{{component}}".zip
-      dest: /tmp
+- when: directory.stat.exists == False
+  name: create /app directory
+  ansible.builtin.file:
+    path: /app
+    state: directory
 
-  - name: extract "{{component}}" artifact
-    ansible.builtin.unarchive:
-      src: /tmp/"{{component}}".zip
-      dest: /app
-      remote_src: yes
+- name: download "{{component}}" artifact
+  ansible.builtin.get_url:
+    url: https://roboshop-builds.s3.amazonaws.com/"{{component}}".zip
+    dest: /tmp
+
+- name: extract "{{component}}" artifact
+  ansible.builtin.unarchive:
+    src: /tmp/"{{component}}".zip
+    dest: /app
+    remote_src: yes  
